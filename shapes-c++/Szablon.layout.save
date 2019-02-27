@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Release" />
+	<File name="CCircle.cpp" open="0" top="0" tabpos="5">
+		<Cursor position="2543" topLine="95" />
+	</File>
+	<File name="CCircle.h" open="0" top="0" tabpos="2">
+		<Cursor position="62" topLine="0" />
+	</File>
+	<File name="CEllipse.h" open="0" top="0" tabpos="4">
+		<Cursor position="330" topLine="6" />
+	</File>
+	<File name="CEquilateralTriangle.cpp" open="0" top="0" tabpos="7">
+		<Cursor position="2962" topLine="105" />
+	</File>
+	<File name="CEquilateralTriangle.h" open="0" top="0" tabpos="4">
+		<Cursor position="88" topLine="0" />
+	</File>
+	<File name="CIsoscelesTriangle.cpp" open="0" top="0" tabpos="3">
+		<Cursor position="1762" topLine="75" />
+	</File>
+	<File name="CIsoscelesTriangle.h" open="0" top="0" tabpos="2">
+		<Cursor position="84" topLine="0" />
+	</File>
+	<File name="CSquare.cpp" open="0" top="0" tabpos="6">
+		<Cursor position="2553" topLine="89" />
+	</File>
+	<File name="CSquare.h" open="0" top="0" tabpos="3">
+		<Cursor position="62" topLine="0" />
+	</File>
+	<File name="MsgHandlers.cpp" open="1" top="1" tabpos="1">
+		<Cursor position="3904" topLine="121" />
+	</File>
+	<File name="MsgHandlers.h" open="0" top="0" tabpos="4">
+		<Cursor position="86" topLine="0" />
+	</File>
+	<File name="Utils.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="116" topLine="0" />
+	</File>
+	<File name="Utils.h" open="0" top="0" tabpos="4">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="main.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="85" topLine="72" />
+	</File>
+</CodeBlocks_layout_file>

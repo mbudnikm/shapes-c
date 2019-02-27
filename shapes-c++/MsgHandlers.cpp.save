@@ -1,0 +1,461 @@
+#include "MsgHandlers.h"
+#include "Utils.h"
+#include <time.h>
+#include <math.h>
+#include "CEllipse.h"
+#include "CRectangle.h"
+#include "CIsoscelesTriangle.h"
+
+#include "CCircle.h"
+#include "CSquare.h"
+#include "CEquilateralTriangle.h"
+
+
+/************************ Zmienne globalne ************************/
+
+int ClientWidth, ClientHeight;
+BOOL EraseBkgnd = TRUE;
+
+RECT MouseRect;
+bool InDrawState = false;
+
+const int MyEllipsesCount = 1;
+CEllipse MyEllipses[MyEllipsesCount];
+
+const int MyRectanglesCount = 1;
+CRectangle MyRectangles[MyRectanglesCount];
+
+const int MyIsoscelesTrianglesCount = 1;
+CIsoscelesTriangle MyIsoscelesTriangles[MyIsoscelesTrianglesCount];
+
+const int MyCirclesCount = 1;
+CCircle MyCircles[MyCirclesCount];
+
+const int MySquaresCount = 1;
+CSquare MySquares[MySquaresCount];
+
+const int MyEquilateralTrianglesCount = 1;
+CEquilateralTriangle MyEquilateralTriangles[MyEquilateralTrianglesCount];
+
+int CurrDrawnShapeIdx = 0;
+enum TShapeType {stUnknown, stEllipse, stRectangle, stIsoscelesTriangle, stCircle, stSquare, stEquilateralTriangle};
+TShapeType CurrDrawnShapeType;
+
+/******************** Procedury obs³ugi zdarzeñ ********************/
+
+//Procedura wywo³ywana przed pokazaniem okna (na pocz¹tku dzia³ania programu).
+//Tutaj mo¿na przeprowadziæ pocz¹tkow¹ inicjalizacjê zmiennych, obiektów itp.
+void OnCreate(HWND hwnd)
+{
+    int i;
+
+    srand(time(NULL));
+
+    if(MyEllipsesCount)
+        CurrDrawnShapeType = stEllipse;
+    else if(MyRectanglesCount)
+        CurrDrawnShapeType = stRectangle;
+    else if(MyIsoscelesTrianglesCount)
+        CurrDrawnShapeType = stIsoscelesTriangle;
+    else if(MyCirclesCount)
+        CurrDrawnShapeType = stCircle;
+    else if(MySquaresCount)
+        CurrDrawnShapeType = stSquare;
+    else if(MyEquilateralTrianglesCount)
+        CurrDrawnShapeType = stEquilateralTriangle;
+    else
+        CurrDrawnShapeType = stUnknown;
+
+    for(i = 0; i < MyEllipsesCount; i++)
+    {
+        MyEllipses[i].setLineWidth(RandRange(2,6));
+        MyEllipses[i].setLineColor(RGB(RandRange(0,255),RandRange(0,255),RandRange(0,255)));
+        MyEllipses[i].setFillColor(RGB(RandRange(0,255),RandRange(0,255),RandRange(0,255)));
+    }
+
+    for(i = 0; i < MyRectanglesCount; i++)
+    {
+        MyRectangles[i].setLineWidth(RandRange(2,6));
+        MyRectangles[i].setLineColor(RGB(RandRange(0,255),RandRange(0,255),RandRange(0,255)));
+        MyRectangles[i].setFillColor(RGB(RandRange(0,255),RandRange(0,255),RandRange(0,255)));
+    }
+
+    for(i = 0; i < MyIsoscelesTrianglesCount; i++)
+    {
+        MyIsoscelesTriangles[i].setLineWidth(RandRange(2,6));
+        MyIsoscelesTriangles[i].setLineColor(RGB(RandRange(0,255),RandRange(0,255),RandRange(0,255)));
+        MyIsoscelesTriangles[i].setFillColor(RGB(RandRange(0,255),RandRange(0,255),RandRange(0,255)));
+    }
+
+    for(i = 0; i < MyCirclesCount; i++)
+    {
+        MyCircles[i].setLineWidth(RandRange(2,6));
+        MyCircles[i].setLineColor(RGB(RandRange(0,255),RandRange(0,255),RandRange(0,255)));
+        MyCircles[i].setFillColor(RGB(RandRange(0,255),RandRange(0,255),RandRange(0,255)));
+    }
+
+    for(i = 0; i < MySquaresCount; i++)
+    {
+        MySquares[i].setLineWidth(RandRange(2,6));
+        MySquares[i].setLineColor(RGB(RandRange(0,255),RandRange(0,255),RandRange(0,255)));
+        MySquares[i].setFillColor(RGB(RandRange(0,255),RandRange(0,255),RandRange(0,255)));
+    }
+
+    for(i = 0; i < MyEquilateralTrianglesCount; i++)
+    {
+        MyEquilateralTriangles[i].setLineWidth(RandRange(2,6));
+        MyEquilateralTriangles[i].setLineColor(RGB(RandRange(0,255),RandRange(0,255),RandRange(0,255)));
+        MyEquilateralTriangles[i].setFillColor(RGB(RandRange(0,255),RandRange(0,255),RandRange(0,255)));
+    }
+
+    SetTimer(hwnd, 1, 25, NULL);
+}
+
+
+//Procedura wywo³ywana po ka¿dej zmianie rozmiaru okna
+void OnSize(HWND hwnd, int width, int height, WPARAM wParam)
+{
+    int i;
+    ClientWidth = width;
+    ClientHeight = height;
+
+    RECT tmpRect = {width/2-250, height/2-150, width/2+250, height/2+150};
+
+    for(i = 0; i < MyEllipsesCount; i++)
+        MyEllipses[i].setBoundingRect(tmpRect);
+
+    for(i = 0; i < MyRectanglesCount; i++)
+        MyRectangles[i].setBoundingRect(tmpRect);
+
+    for(i = 0; i < MyIsoscelesTrianglesCount; i++)
+        MyIsoscelesTriangles[i].setBoundingRect(tmpRect);
+
+    for(i = 0; i < MyCirclesCount; i++)
+        MyCircles[i].setBoundingRect(tmpRect);
+
+    for(i = 0; i < MySquaresCount; i++)
+        MySquares[i].setBoundingRect(tmpRect);
+
+    for(i = 0; i < MyEquilateralTrianglesCount; i++)
+        MyEquilateralTriangles[i].setBoundingRect(tmpRect);
+
+    InvalidateRect(hwnd, NULL, EraseBkgnd);
+}
+
+
+//Procedura wywo³ywana co 25 ms (czas ustawia siê trzecim argumentem
+// funkcji SetTimer() wywo³ywanej w OnCreate).
+void OnTimer(HWND hwnd, WPARAM timerID)
+{
+    int i;
+
+    if(InDrawState) return;
+
+    for(i = 0; i < MyEllipsesCount; i++)
+        MyEllipses[i].Tick();
+
+    for(i = 0; i < MyRectanglesCount; i++)
+        MyRectangles[i].Tick();
+
+    for(i = 0; i < MyIsoscelesTrianglesCount; i++)
+        MyIsoscelesTriangles[i].Tick();
+
+    for(i = 0; i < MyCirclesCount; i++)
+        MyCircles[i].Tick();
+
+    for(i = 0; i < MySquaresCount; i++)
+        MySquares[i].Tick();
+
+    for(i = 0; i < MyEquilateralTrianglesCount; i++)
+        MyEquilateralTriangles[i].Tick();
+
+    InvalidateRect(hwnd, NULL, EraseBkgnd);
+}
+
+
+//Procedura wywo³ywana w celu odœwie¿enia zawartoœci okna.
+//Wy³¹cznie tutaj powinno siê przeprowadzaæ rysowanie.
+void OnPaint(HWND hwnd, HDC hdc)
+{
+	int i;
+
+	if(InDrawState)
+        Rectangle(hdc,
+                  MouseRect.left,
+                  MouseRect.top,
+                  MouseRect.right,
+                  MouseRect.bottom);
+
+    for(i = 0; i < MyEllipsesCount; i++)
+    {
+        DrawFocusRect(hdc, &MyEllipses[i].getBoundingRect());
+        MyEllipses[i].Paint(hdc);
+    }
+
+    for(i = 0; i < MyRectanglesCount; i++)
+    {
+        DrawFocusRect(hdc, &MyRectangles[i].getBoundingRect());
+        MyRectangles[i].Paint(hdc);
+    }
+
+    for(i = 0; i < MyIsoscelesTrianglesCount; i++)
+    {
+        DrawFocusRect(hdc, &MyIsoscelesTriangles[i].getBoundingRect());
+        MyIsoscelesTriangles[i].Paint(hdc);
+    }
+
+    for(i = 0; i < MyCirclesCount; i++)
+    {
+        DrawFocusRect(hdc, &MyCircles[i].getBoundingRect());
+        MyCircles[i].Paint(hdc);
+    }
+
+    for(i = 0; i < MySquaresCount; i++)
+    {
+        DrawFocusRect(hdc, &MySquares[i].getBoundingRect());
+        MySquares[i].Paint(hdc);
+    }
+
+    for(i = 0; i < MyEquilateralTrianglesCount; i++)
+    {
+        DrawFocusRect(hdc, &MyEquilateralTriangles[i].getBoundingRect());
+        MyEquilateralTriangles[i].Paint(hdc);
+    }
+
+}
+
+
+//Procedura wywo³ywana po naciœniêciu klawisza klawiatury.
+void OnKeyDown(HWND hwnd, WPARAM keyCode)
+{
+    switch (keyCode)
+    {
+    case VK_LEFT:
+        break;
+    case VK_UP:
+        break;
+    case VK_RIGHT:
+        break;
+    case VK_DOWN:
+        break;
+    case 0x43: //klawisz C
+        break;
+    case 0x4F: //klawisz O
+        EraseBkgnd ^= 0x00000001;
+        break;
+    case 0x52: //klawisz R
+        break;
+    case 0x53: //klawisz S
+        break;
+    }
+    //InvalidateRect(hwnd, NULL, EraseBkgnd);
+}
+
+
+//Procedura wywo³ywana po poruszeniu wskaŸnika myszy.
+void OnMouseMove(HWND hwnd, int x, int y, WPARAM wParam)
+{
+    if(InDrawState)
+    {
+        MouseRect.right = x;
+        MouseRect.bottom = y;
+
+        switch(CurrDrawnShapeType)
+        {
+        case stEllipse:
+            MyEllipses[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            break;
+        case stRectangle:
+            MyRectangles[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            break;
+        case stIsoscelesTriangle:
+            MyIsoscelesTriangles[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            break;
+        case stCircle:
+            MyCircles[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            break;
+        case stSquare:
+            MySquares[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            break;
+        case stEquilateralTriangle:
+            MyEquilateralTriangles[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            break;
+        case stUnknown:
+            break;
+        }
+
+        InvalidateRect(hwnd, NULL, EraseBkgnd);
+    }
+}
+
+
+//Procedura wywo³ywana po naciœniêciu lewego przycisku myszy.
+void OnLButtonDown(HWND hwnd, int x, int y, WPARAM wParam)
+{
+    if(!InDrawState)
+    {
+        MouseRect.left = x;
+        MouseRect.top = y;
+        MouseRect.right = x;
+        MouseRect.bottom = y;
+
+        switch(CurrDrawnShapeType)
+        {
+        case stEllipse:
+            MyEllipses[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            break;
+        case stRectangle:
+            MyRectangles[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            break;
+        case stIsoscelesTriangle:
+            MyIsoscelesTriangles[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            break;
+        case stCircle:
+            MyCircles[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            break;
+        case stSquare:
+            MySquares[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            break;
+        case stEquilateralTriangle:
+            MyEquilateralTriangles[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            break;
+        case stUnknown:
+            break;
+        }
+
+        InDrawState = true;
+        SetCapture(hwnd);
+    }
+}
+
+
+//Procedura wywo³ywana po zwolnieniu lewego przycisku myszy.
+void OnLButtonUp(HWND hwnd, int x, int y, WPARAM wParam)
+{
+    if(InDrawState)
+    {
+        MouseRect.right = x;
+        MouseRect.bottom = y;
+
+        switch(CurrDrawnShapeType)
+        {
+        case stEllipse:
+            MyEllipses[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            CurrDrawnShapeIdx = (CurrDrawnShapeIdx+1) % MyEllipsesCount;
+            if(CurrDrawnShapeIdx == 0)
+            {
+                if(MyRectanglesCount)
+                    CurrDrawnShapeType = stRectangle;
+                else if(MyIsoscelesTrianglesCount)
+                    CurrDrawnShapeType = stIsoscelesTriangle;
+				else if(MyCirclesCount)
+					CurrDrawnShapeType = stCircle;
+				else if(MySquaresCount)
+					CurrDrawnShapeType = stSquare;
+				else if(MyEquilateralTrianglesCount)
+					CurrDrawnShapeType = stEquilateralTriangle;            }
+            break;
+        case stRectangle:
+            MyRectangles[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            CurrDrawnShapeIdx = (CurrDrawnShapeIdx+1) % MyRectanglesCount;
+            if(CurrDrawnShapeIdx == 0)
+            {
+                if(MyIsoscelesTrianglesCount)
+                    CurrDrawnShapeType = stIsoscelesTriangle;
+				else if(MyCirclesCount)
+					CurrDrawnShapeType = stCircle;
+				else if(MySquaresCount)
+					CurrDrawnShapeType = stSquare;
+				else if(MyEquilateralTrianglesCount)
+					CurrDrawnShapeType = stEquilateralTriangle;            }
+				else if(MyEllipsesCount)
+					CurrDrawnShapeType = stEllipse;            }
+            break;
+        case stIsoscelesTriangle:
+            MyIsoscelesTriangles[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            CurrDrawnShapeIdx = (CurrDrawnShapeIdx+1) % MyIsoscelesTrianglesCount;
+            if(CurrDrawnShapeIdx == 0)
+            {
+				if(MyCirclesCount)
+					CurrDrawnShapeType = stCircle;
+				else if(MySquaresCount)
+					CurrDrawnShapeType = stSquare;
+				else if(MyEquilateralTrianglesCount)
+					CurrDrawnShapeType = stEquilateralTriangle;            }
+				else if(MyEllipsesCount)
+					CurrDrawnShapeType = stEllipse;            }
+                else if(MyRectanglesCount)
+                    CurrDrawnShapeType = stRectangle;
+            break;
+        case stCircle:
+            MyCircles[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            CurrDrawnShapeIdx = (CurrDrawnShapeIdx+1) % MyCirclesCount;
+            if(CurrDrawnShapeIdx == 0)
+            {
+                else if(MyRectanglesCount)
+                    CurrDrawnShapeType = stRectangle;
+                else if(MyIsoscelesTrianglesCount)
+                    CurrDrawnShapeType = stIsoscelesTriangle;
+				else if(MyCirclesCount)
+					CurrDrawnShapeType = stCircle;
+				else if(MySquaresCount)
+					CurrDrawnShapeType = stSquare;
+				else if(MyEquilateralTrianglesCount)
+					CurrDrawnShapeType = stEquilateralTriangle;            }
+				else if(MyEllipsesCount)
+					CurrDrawnShapeType = stEllipse;            }
+            break;
+        case stSquare:
+            MySquares[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            CurrDrawnShapeIdx = (CurrDrawnShapeIdx+1) % MySquaresCount;
+            if(CurrDrawnShapeIdx == 0)
+            {
+                else if(MyRectanglesCount)
+                    CurrDrawnShapeType = stRectangle;
+                else if(MyIsoscelesTrianglesCount)
+                    CurrDrawnShapeType = stIsoscelesTriangle;
+				else if(MyCirclesCount)
+					CurrDrawnShapeType = stCircle;
+				else if(MySquaresCount)
+					CurrDrawnShapeType = stSquare;
+				else if(MyEquilateralTrianglesCount)
+					CurrDrawnShapeType = stEquilateralTriangle;            }
+				else if(MyEllipsesCount)
+					CurrDrawnShapeType = stEllipse;            }
+            break;
+        case stEquilateralTriangle:
+            MyEquilateralTriangles[CurrDrawnShapeIdx].setBoundingRect(MouseRect);
+            CurrDrawnShapeIdx = (CurrDrawnShapeIdx+1) % MyEquilateralTrianglesCount;
+            if(CurrDrawnShapeIdx == 0)
+            {
+                else if(MyRectanglesCount)
+                    CurrDrawnShapeType = stRectangle;
+                else if(MyIsoscelesTrianglesCount)
+                    CurrDrawnShapeType = stIsoscelesTriangle;
+				else if(MyCirclesCount)
+					CurrDrawnShapeType = stCircle;
+				else if(MySquaresCount)
+					CurrDrawnShapeType = stSquare;
+				else if(MyEquilateralTrianglesCount)
+					CurrDrawnShapeType = stEquilateralTriangle;            }
+				else if(MyEllipsesCount)
+					CurrDrawnShapeType = stEllipse;            }
+            break;
+        case stUnknown:
+            break;
+        }
+
+        InDrawState = false;
+        ReleaseCapture();
+        InvalidateRect(hwnd, NULL, EraseBkgnd);
+    }
+}
+
+
+//Procedura wywo³ywana przed zniszczeniem okna (przed koñcem dzia³ania programu).
+//Tutaj mo¿na zwolniæ zaalokowane zasoby.
+void OnDestroy(HWND hwnd)
+{
+    KillTimer(hwnd, 1);
+}
+
